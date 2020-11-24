@@ -1,0 +1,9 @@
+{{!-- <h3>{{courses}}</h3> --}}
+{{#each courses}}
+<div style="background-color: aqua;">
+    <a href="/course/{{this.slug}}">link</a>
+    <h2>{{this.name}}</h2>
+    description:{{this.description}}
+    <hr>
+</div>
+{{/each}}
