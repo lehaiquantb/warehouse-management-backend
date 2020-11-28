@@ -1,9 +1,10 @@
 module.exports = class CustomError extends Error {
-  constructor(code, ...params) {
-    super(...params);
+  constructor(statusCode, message, info) {
+    super(message);
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, CustomError);
     }
-    this.code = code;
+    this.statusCode = statusCode;
+    this.info = info;
   }
 };

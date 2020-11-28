@@ -3,7 +3,7 @@ const router = express.Router();
 const authenticate = require('../middlewares/auth');
 const asyncMiddleware = require('../middlewares/async');
 const userController = require('../controllers/user-controller');
-
+const checkRole = require('../middlewares/checkRole');
 /**
  * @swagger
  *
@@ -27,7 +27,12 @@ const userController = require('../controllers/user-controller');
  *       200:
  *         description: login
  */
-router.get('/', authenticate, asyncMiddleware(userController.getProfiles));
+router.get(
+  '/',
+  authenticate,
+  checkRole('hello'),
+  asyncMiddleware(userController.getProfiles),
+);
 router.post('/create', asyncMiddleware(userController.createUser));
 router.post('/login', asyncMiddleware(userController.login));
 

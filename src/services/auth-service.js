@@ -8,8 +8,12 @@ const STATUS_CODE = require('../errors/error-code');
 const User = require('../models/user');
 
 const { JWT_SECRET_KEY } = process.env;
-const JWT_EXPIRES_TIME_ACCESS_TOKEN = 60 * 60;
-const JWT_EXPIRES_TIME_REFRESH_TOKEN = 24 * 60 * 60;
+const JWT_EXPIRES_TIME_ACCESS_TOKEN = Number.parseInt(
+  process.env.JWT_EXPIRES_TIME_ACCESS_TOKEN,
+);
+const JWT_EXPIRES_TIME_REFRESH_TOKEN = Number.parseInt(
+  process.env.JWT_EXPIRES_TIME_REFRESH_TOKEN,
+);
 const generateAccessToken = async (email) => {
   //console.log('JWT_SECRET_KEY', JWT_SECRET_KEY);
   const accessToken = jwt.sign({ email: email }, JWT_SECRET_KEY, {
@@ -88,24 +92,36 @@ const login = async (email, password) => {
 };
 
 const verifyAccessToken = async (accessToken) => {
-  const payloadAccessToken = await jwt.verify(accessToken, JWT_SECRET_KEY);
-  debugger;
-  if (payloadAccessToken.exp > Date.now() / 1000) {
+  try {
+    const payloadAccessToken = await jwt.verify(accessToken, JWT_SECRET_KEY);
     const { email } = payloadAccessToken;
     const Data = await User.findOne({ email }).select('accessTokens');
     return {
       isVerified: Data.accessTokens.includes(accessToken),
       email: email,
     };
+  } catch (err) {
+    if (err.name == 'TokenExpiredError') return { isVerified: false };
+    throw new CustomError(STATUS_CODE.UNAUTHORIZED, err.message);
   }
 };
 
-const verifyRefreshToken = async (refreshToken) => {
-  //debugger
-  const data = await jwt.verify(refreshToken, JWT_SECRET_KEY);
-  const { email } = data;
-  const Data = await User.findOne({ email }).select('refreshTokens');
-  return { isVerified: Data.tokens.includes(refreshToken), email: email };
+const verifyRefreshTokenAndGenAccessToken = async (refreshToken) => {
+  try {
+    const data = await jwt.verify(refreshToken, JWT_SECRET_KEY);
+    let { email } = data;
+    const Data = await User.findOne({ email }).select('refreshTokens');
+    if (Data.refreshTokens.includes(refreshToken)) {
+      const accessToken = await generateAccessToken(email);
+      return { email, accessToken };
+    }
+  } catch (error) {
+    throw new CustomError(
+      STATUS_CODE.UNAUTHORIZED,
+      err.message,
+      'refreshToken expired !',
+    );
+  }
 };
 
 const verifyAdminAccessToken = async (accessToken) => {
@@ -142,4 +158,5 @@ module.exports = {
   logout,
   changePass,
   verifyAdminAccessToken,
+  verifyRefreshTokenAndGenAccessToken,
 };

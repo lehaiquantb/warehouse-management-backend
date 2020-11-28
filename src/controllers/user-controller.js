@@ -14,7 +14,6 @@ const getProfiles = async (req, res, next) => {
 
 const createUser = async (req, res) => {
   try {
-    debugger;
     const user = await userService.createUser(req.body);
     res.send({ status: !!user ? 1 : 0, result: user });
   } catch (err) {}
@@ -30,11 +29,12 @@ const login = async (req, res) => {
   return res
     .cookie('x-access-token', 'Bearer ' + accessToken, {
       httpOnly: true,
-      maxAge: 360000000,
+      maxAge: Number.parseInt(process.env.JWT_EXPIRES_TIME_ACCESS_TOKEN) * 1000,
     })
     .cookie('x-refresh-token', 'Bearer ' + refreshToken, {
       httpOnly: true,
-      maxAge: 60 * 60 * 240,
+      maxAge:
+        Number.parseInt(process.env.JWT_EXPIRES_TIME_REFRESH_TOKEN) * 1000,
     })
     .send({ status: status, result: { accessToken, refreshToken }, a: 'a' });
 };

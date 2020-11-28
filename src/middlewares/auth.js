@@ -1,39 +1,59 @@
 const asyncMiddleware = require('./async');
 const CustomError = require('../errors/custom-error');
-const STATUS_CODE = require('../constants/status-code');
+const { StatusCodes, getReasonPhrase } = require('http-status-codes');
+
 const authService = require('../services/auth-service');
-const cookieParser = require('cookie-parser');
 
 const auth = async (req, res, next) => {
   //try {
   console.log('[COOKIES]: ', req.cookies);
   //note
-  debugger;
-  let refreshTokenType, refreshToken;
+  //debugger
+  let isVerified, email;
   const a = req.cookies['x-access-token'];
-  if (!a || typeof a !== 'string')
-    throw new CustomError(STATUS_CODE.UNAUTHORIZED);
-  const [accessTokenType, accessToken] = a.split(' ');
-
-  const b = req.cookies['x-refresh-token'];
-  if (typeof b == 'string') {
-    [refreshTokenType, refreshToken] = b.split(' ');
+  if (typeof a == 'string') {
+    const [accessTokenType, accessToken] = a.split(' ');
+    if (accessTokenType !== 'Bearer')
+      throw new CustomError(
+        StatusCodes.UNAUTHORIZED,
+        'accessToken khong phai jwt!',
+      );
+    const data = await authService.verifyAccessToken(accessToken);
+    isVerified = data.isVerified;
+    email = data.email;
   }
+  // throw new CustomError(
+  //     StatusCodes.UNAUTHORIZED,
+  //     'x-access-token khong ton tai!',
+  // );
+
   //const { authorization } = req.headers;
-  //if (!authorization) throw new CustomError(STATUS_CODE.UNAUTHORIZED);
+  //if (!authorization) throw new CustomError( StatusCodes.UNAUTHORIZED);
   //const [tokenType, accessToken] = authorization.split(' ');
-  if (accessTokenType !== 'Bearer')
-    throw new CustomError(STATUS_CODE.UNAUTHORIZED, 'Unauthorized !');
-  const { isVerified, email } = await authService.verifyAccessToken(
-    accessToken,
-  );
 
   if (!isVerified) {
+    let refreshTokenType, refreshToken;
+    const b = req.cookies['x-refresh-token'];
+    if (typeof b == 'string') [refreshTokenType, refreshToken] = b.split(' ');
+
     if (refreshTokenType !== 'Bearer')
-      throw new CustomError(STATUS_CODE.UNAUTHORIZED, 'Unauthorized !');
+      throw new CustomError(
+        StatusCodes.UNAUTHORIZED,
+        'refreshToken khong phai jwt!',
+      );
+    const data = await authService.verifyRefreshTokenAndGenAccessToken(
+      refreshToken,
+    );
+    const accessToken = data.accessToken;
+    email = data.email;
+    res.cookie('x-access-token', 'Bearer ' + accessToken, {
+      httpOnly: true,
+      maxAge: 3600000,
+    });
   }
+  res.locals.email = email;
   //} catch (error) {
-  next();
+  return next();
   //}
 };
 
