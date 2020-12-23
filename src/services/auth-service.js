@@ -95,10 +95,10 @@ const verifyAccessToken = async (accessToken) => {
   try {
     const payloadAccessToken = await jwt.verify(accessToken, JWT_SECRET_KEY);
     const { email } = payloadAccessToken;
-    const Data = await User.findOne({ email }).select('accessTokens');
+    const user = await User.findOne({ email });
     return {
-      isVerified: Data.accessTokens.includes(accessToken),
-      email: email,
+      isVerified: user.accessTokens.includes(accessToken),
+      user: user,
     };
   } catch (err) {
     if (err.name == 'TokenExpiredError') return { isVerified: false };
@@ -110,10 +110,10 @@ const verifyRefreshTokenAndGenAccessToken = async (refreshToken) => {
   try {
     const data = await jwt.verify(refreshToken, JWT_SECRET_KEY);
     let { email } = data;
-    const Data = await User.findOne({ email }).select('refreshTokens');
-    if (Data.refreshTokens.includes(refreshToken)) {
+    const user = await User.findOne({ email }).select('refreshTokens');
+    if (user.refreshTokens.includes(refreshToken)) {
       const accessToken = await generateAccessToken(email);
-      return { email, accessToken };
+      return { user: user, accessToken };
     }
   } catch (error) {
     throw new CustomError(
@@ -127,9 +127,9 @@ const verifyRefreshTokenAndGenAccessToken = async (refreshToken) => {
 const verifyAdminAccessToken = async (accessToken) => {
   const data = await jwt.verify(accessToken, JWT_SECRET_KEY);
   const { email } = data;
-  const Data = await User.findOne({ email }).select('tokens', 'role');
+  const user = await User.findOne({ email }).select('tokens', 'role');
   return {
-    status: Data.tokens.includes(accessToken) && data.role === 'Admin',
+    status: user.tokens.includes(accessToken) && data.role === 'Admin',
     email: email,
   };
 };

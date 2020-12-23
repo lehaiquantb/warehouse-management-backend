@@ -6,8 +6,6 @@ const User = require('../models/user');
 const checkRole = (roles) => {
   return async (req, res, next) => {
     try {
-      console.log(roles);
-
       return next();
     } catch (err) {
       next(err);

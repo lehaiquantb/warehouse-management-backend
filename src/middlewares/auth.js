@@ -9,7 +9,7 @@ const auth = async (req, res, next) => {
   console.log('[COOKIES]: ', req.cookies);
   //note
   //debugger
-  let isVerified, email;
+  let isVerified, user;
   const a = req.cookies['x-access-token'];
   if (typeof a == 'string') {
     const [accessTokenType, accessToken] = a.split(' ');
@@ -20,7 +20,7 @@ const auth = async (req, res, next) => {
       );
     const data = await authService.verifyAccessToken(accessToken);
     isVerified = data.isVerified;
-    email = data.email;
+    user = data.user;
   }
   // throw new CustomError(
   //     StatusCodes.UNAUTHORIZED,
@@ -45,13 +45,13 @@ const auth = async (req, res, next) => {
       refreshToken,
     );
     const accessToken = data.accessToken;
-    email = data.email;
+    user = data.user;
     res.cookie('x-access-token', 'Bearer ' + accessToken, {
       httpOnly: true,
       maxAge: 3600000,
     });
   }
-  res.locals.email = email;
+  res.locals.user = user;
   //} catch (error) {
   return next();
   //}

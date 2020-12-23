@@ -7,6 +7,7 @@
     "beauty": "prettier --single-quote --trailing-comma all --tab-width 2 --write src/**/*.{js,json,scss}",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --inspect src/index.js",
+    "test1":"nodemon --inspect src/test1.js",
     "css": "node-sass --watch src/resources/scss/ -o src/public/css/"
   },
   "author": "",
