@@ -81,18 +81,18 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 //
-const camelCaseReq = require('./middlewares/camelCaseReq');
-const snakeCaseRes = require('./middlewares/snakeCaseRes');
-app.use(camelCaseReq);
-app.use(snakeCaseRes());
+// const camelCaseReq = require('./middlewares/camelCaseReq');
+// const snakeCaseRes = require('./middlewares/snakeCaseRes');
+// app.use(camelCaseReq);
+// app.use(snakeCaseRes());
 
 //route
 const route = require('./routes');
 route(app);
 
 //handle error
-const handleError = require('./errors/arror-handler');
-app.use(handleError);
+const { errorHandler } = require('./errors/arror-handler');
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`---Server is running PORT: ${PORT}`);

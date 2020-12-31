@@ -1,0 +1,18 @@
+POST http://localhost:3000/products
+Content-Type: application/json
+
+{
+    "createdBy":"lehaiquantb@gmail.com",
+    "modifiedBy":"lehaiquantb@gmail.com",
+    "options":{
+        "color":"blue",
+        "material":"medal"
+    },
+    "name":"Điện thoại Xiaomi Note 5",
+    "description":"Điện thoại giá rẻ chất lượng",
+    "price":3230000,
+    "quantity":10,
+    "image":"",
+    "status":"active",
+    "PCode":1000
+}

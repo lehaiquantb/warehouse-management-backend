@@ -1,8 +1,7 @@
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const snakecaseKeys = require('snakecase-keys');
 
-function handleError(err, req, res, next) {
-  //debugger;
+const errorHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
   let { message, info } = err || '';
   // switch (statusCode) {
@@ -41,6 +40,27 @@ function handleError(err, req, res, next) {
           },
     ),
   );
-}
+};
 
-module.exports = handleError;
+const handleError = (err, res) => {
+  let statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+  let { message, info } = err || '';
+  return res.status(statusCode).send(
+    snakecaseKeys(
+      statusCode
+        ? {
+            statusCode,
+            reasonPhrase: getReasonPhrase(statusCode),
+            message,
+            info,
+          }
+        : {
+            statusCode,
+            message: 'Loi khong xac dinh',
+            stack: err.stack,
+          },
+    ),
+  );
+};
+
+module.exports = { errorHandler, handleError };

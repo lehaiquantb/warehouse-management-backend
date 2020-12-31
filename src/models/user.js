@@ -1,47 +1,56 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
 
-const userSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  avatar: {
-    type: String,
-    required: false,
-  },
-  role: {
-    type: String,
-    required: true,
-  },
-  // id: {
-  //   type: String,
-  //   required: true
-  // },
-  gender: {
-    type: String,
-    required: true,
-  },
-  accessTokens: [
-    {
+const userSchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      dropDups: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    avatar: {
       type: String,
       required: false,
     },
-  ],
-  refreshTokens: [
-    {
+    role: {
       type: String,
-      required: false,
+      required: true,
     },
-  ],
-});
+    // id: {
+    //   type: String,
+    //   required: true
+    // },
+    gender: {
+      type: String,
+      required: [true, ''],
+      enum: ['male', 'female'],
+    },
+    accessTokens: [
+      {
+        type: String,
+        required: false,
+      },
+    ],
+    refreshTokens: [
+      {
+        type: String,
+        required: false,
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  },
+);
 
 // userSchema.pre('save', async function (next) {
 //   // Hash the password before saving the user model
@@ -51,5 +60,5 @@ const userSchema = mongoose.Schema({
 //   }
 //   next()
 // })
-
+autoIncrement.initialize(mongoose.connection);
 module.exports = mongoose.model('User', userSchema);

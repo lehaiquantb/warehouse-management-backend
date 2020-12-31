@@ -1,0 +1,10 @@
+POST http://localhost:3000/users/create
+Content-Type: application/json
+
+{
+    "name": "quan",
+    "email": "lehaiquantb1213@gmail.com",
+    "password": "quan1041999",
+    "role": "admin",
+  	"gender":"male"
+}

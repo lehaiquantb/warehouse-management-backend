@@ -1,8 +1,10 @@
 const bcrypt = require('bcrypt');
+const { StatusCodes } = require('http-status-codes');
+const { handleError } = require('../errors/arror-handler');
+const CustomError = require('../errors/custom-error');
 const User = require('../models/user');
 const { SALTROUNDS } = process.env;
 
-const { use } = require('../routes/news');
 const getProfiles = async (email) => {
   try {
     const user = await User.findOne({ email }).select([
@@ -36,16 +38,27 @@ const getAllUsers = async () => {
   return users;
 };
 
-const createUser = async (user) => {
-  //debugger
+const createUser = async (user, req, res) => {
+  //debugger\
   let bcryptPass = await bcrypt.hash(
     user.password,
     Number.parseInt(SALTROUNDS),
   );
   user.password = bcryptPass;
   const newUser = new User(user);
-  const promiseSaveUser = await newUser.save();
-  return promiseSaveUser;
+  try {
+    const promiseSaveUser = await newUser.save();
+    return promiseSaveUser;
+  } catch (error) {
+    debugger;
+    handleError(new CustomError(StatusCodes.BAD_REQUEST, error.message), res);
+  }
+
+  // const promiseSaveUser = await newUser.save((err)=>{
+  //   debugger
+  //   throw new Error();
+  // });
+  //return promiseSaveUser;
 };
 
 module.exports = { getUserInform, getAllUsers, createUser, getProfiles };

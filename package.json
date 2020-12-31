@@ -7,7 +7,7 @@
     "beauty": "prettier --single-quote --trailing-comma all --tab-width 2 --write src/**/*.{js,json,scss}",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --inspect src/index.js",
-    "test1":"nodemon --inspect src/test1.js",
+    "test1": "nodemon --inspect src/test1.js",
     "css": "node-sass --watch src/resources/scss/ -o src/public/css/"
   },
   "author": "",
@@ -23,6 +23,7 @@
     "http-status-codes": "^2.1.4",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.14",
+    "mongoose-auto-increment": "^5.0.1",
     "mongoose-slug-generator": "^1.0.4",
     "snakecase-keys": "^3.2.0"
   },

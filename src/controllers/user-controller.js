@@ -14,9 +14,11 @@ const getProfiles = async (req, res, next) => {
 
 const createUser = async (req, res) => {
   try {
-    const user = await userService.createUser(req.body);
-    res.send({ status: !!user ? 1 : 0, result: user });
-  } catch (err) {}
+    const user = await userService.createUser(req.body, req, res);
+    res.send(user);
+  } catch (err) {
+    throw err;
+  }
 };
 
 const login = async (req, res) => {
