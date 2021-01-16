@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { StatusCodes } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -72,14 +73,11 @@ const compareBcrypt = async (data, hashed) => {
 const login = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user)
-    throw new CustomError(STATUS_CODE.USER_NOT_EXISTS, 'User is not exist.');
+    throw new CustomError(StatusCodes.BAD_REQUEST, 'User is not exist.');
 
   const isCorrectPassword = await compareBcrypt(password, user.password);
   if (!isCorrectPassword)
-    throw new CustomError(
-      STATUS_CODE.PASSWORD_NOT_MATCH,
-      'Password is not match',
-    );
+    throw new CustomError(StatusCodes.UNAUTHORIZED, 'Password is not match');
 
   const accessToken = await generateAccessToken(email);
   const refreshToken = await generateRefreshToken(email);
@@ -88,7 +86,7 @@ const login = async (email, password) => {
   user.accessTokens = user.accessTokens.concat(accessToken);
 
   let promiseLogin = await user.save();
-  return { status: !!promiseLogin, accessToken, refreshToken };
+  return { status: !!promiseLogin, accessToken, refreshToken, user };
 };
 
 const verifyAccessToken = async (accessToken) => {
@@ -102,7 +100,7 @@ const verifyAccessToken = async (accessToken) => {
     };
   } catch (err) {
     if (err.name == 'TokenExpiredError') return { isVerified: false };
-    throw new CustomError(STATUS_CODE.UNAUTHORIZED, err.message);
+    throw new CustomError(StatusCodes.UNAUTHORIZED, err.message);
   }
 };
 
@@ -110,14 +108,16 @@ const verifyRefreshTokenAndGenAccessToken = async (refreshToken) => {
   try {
     const data = await jwt.verify(refreshToken, JWT_SECRET_KEY);
     let { email } = data;
-    const user = await User.findOne({ email }).select('refreshTokens');
+    const user = await User.findOne({ email });
     if (user.refreshTokens.includes(refreshToken)) {
       const accessToken = await generateAccessToken(email);
       return { user: user, accessToken };
+    } else {
+      throw new CustomError(StatusCodes.UNAUTHORIZED, 'refreshToken expired !');
     }
   } catch (error) {
     throw new CustomError(
-      STATUS_CODE.UNAUTHORIZED,
+      StatusCodes.UNAUTHORIZED,
       err.message,
       'refreshToken expired !',
     );
@@ -143,13 +143,43 @@ const changePass = async (currentPass, newPass, accessToken) => {
   return promiseChangePass.nModified;
 };
 
-const logout = async (email, accessToken) => {
-  const tokens = await User.findOne({ email }).select('tokens');
-  const newTokens = tokens.tokens.filter((value) => {
-    return value !== accessToken;
-  });
-  const updatePromise = await User.updateOne({ email }, { tokens: newTokens });
-  return updatePromise.nModified;
+const logout = async (req, res) => {
+  const a = req.cookies['x-access-token'];
+  const b = req.cookies['x-refresh-token'];
+  let accessToken,
+    refreshToken,
+    accessTokenType,
+    refreshTokenType = '';
+  try {
+    let data;
+    if (typeof a == 'string') {
+      [accessTokenType, accessToken] = a.split(' ');
+      if (accessTokenType == 'Bearer') {
+        data = jwt.verify(accessToken, JWT_SECRET_KEY);
+      }
+    } else if (typeof b == 'string') {
+      [refreshTokenType, refreshToken] = b.split(' ');
+      if (refreshTokenType == 'Bearer') {
+        data = jwt.verify(refreshToken, JWT_SECRET_KEY);
+      }
+    }
+    let { email } = data || req.body;
+    const user = await User.findOne({ email });
+    const newAccessTokens = user.accessTokens.filter((value) => {
+      return value !== accessToken;
+    });
+    const newRefreshTokens = user.refreshTokens.filter((value) => {
+      return value !== refreshToken;
+    });
+    const updatePromise = await User.updateOne(
+      { email },
+      { accessTokens: newAccessTokens },
+      { refreshTokens: newRefreshTokens },
+    );
+    return updatePromise;
+  } catch (error) {
+    throw new CustomError(StatusCodes.BAD_REQUEST, 'Đăng xuất thất bại');
+  }
 };
 
 module.exports = {

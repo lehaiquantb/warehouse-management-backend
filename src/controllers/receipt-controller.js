@@ -4,9 +4,9 @@ const CustomError = require('../errors/custom-error');
 const Receipt = require('../models/receipt');
 
 const createReceipt = async (req, res, next) => {
-  let _pr = req.body;
+  let _rc = req.body;
   try {
-    const newReceipt = new Receipt(_pr);
+    const newReceipt = new Receipt(_rc);
     const receiptSaved = await newReceipt.save();
     res.send(receiptSaved);
   } catch (error) {

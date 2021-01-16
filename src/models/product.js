@@ -5,25 +5,46 @@ const productSchema = mongoose.Schema(
   {
     createdBy: {
       type: String,
+      default: '',
     },
     modifiedBy: {
       type: String,
+      default: '',
     },
-    options: {
-      type: Map,
-      of: String,
-    },
+    options: [
+      {
+        name: {
+          type: String,
+        },
+        value: {
+          type: String,
+        },
+      },
+    ],
+
     name: {
       type: String,
-      required: true,
+      required: [true, 'Tên sản phẩm không được để trống'],
     },
     description: {
       type: String,
+      default: '',
     },
     price: {
       type: Number,
-      required: true,
+      required: [true, 'Giá sản phẩm không được để trống'],
     },
+    traceCostPrices: [
+      {
+        date: {
+          type: Date,
+          default: Date.now(),
+        },
+        value: {
+          type: Number,
+        },
+      },
+    ],
     quantity: {
       type: Number,
       required: true,
@@ -31,6 +52,11 @@ const productSchema = mongoose.Schema(
     image: {
       type: String,
       default: IMG_DEFAULT_BASE64,
+    },
+    listImage: [{ type: String }],
+    vendor: {
+      type: String,
+      default: '',
     },
     PCode: {
       type: Number,
@@ -43,11 +69,11 @@ const productSchema = mongoose.Schema(
       enum: ['active', 'inactive'],
       default: 'active',
     },
-    categoryId: {
+    category: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Category',
     },
-    productReceiptIds: [
+    productReceipts: [
       { type: mongoose.SchemaTypes.ObjectId, ref: 'ProductReceipt' },
     ],
   },
@@ -70,4 +96,5 @@ productSchema.plugin(autoIncrement.plugin, {
   startAt: 0,
   incrementBy: 1,
 });
+productSchema.index({ name: 'text' });
 module.exports = mongoose.model('Product', productSchema);

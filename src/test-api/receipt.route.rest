@@ -1,0 +1,38 @@
+POST http://localhost:3000/receipts
+Content-Type: application/json
+
+{
+    "createdBy":"lehaiquantb@gmail.com",
+    "modifiedBy":"lehaiquantb@gmail.com",
+    "RCode":"",
+    "note":"Lần đặt hàng thứ nhất",
+    "stockStatus":"NOT_YET",//nhập kho
+    "tags":[
+        "tag1",
+        "tag2"
+    ],
+    "totalMoney":123500,
+    "supplierId":"5fee33999fbb8c2b14b8896c",
+    "paymentStatus":"NOT_YET",
+    "payments":[
+        {
+        "createdBy":"lehaiquantb@gmail.com",
+        "modifiedBy":"lehaiquantb@gmail.com",
+        "paymentMethod":"CASH",
+        "paidMoney":100000,
+        "paymentStatus":"NOT_YET"//thanh toán
+        }
+    ],
+    "products":[
+        {
+            "productId":"5feda6fbce1b5928981300ff",
+            "quantityPerProduct":10,
+            "costPrice":12000,
+        },
+        {
+            "productId":"5feda7b5dffd7c24f8acd4d9",
+            "quantityPerProduct":14,
+            "costPrice":23131,
+        }
+    ]
+}

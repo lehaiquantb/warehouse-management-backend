@@ -4,14 +4,19 @@ const categorySchema = mongoose.Schema(
   {
     name: {
       type: String,
+      required: [true, 'Tên danh mục không được trống'],
+      unique: true,
+      dropDups: true,
     },
     createdBy: {
       type: String,
+      default: '',
     },
     modifiedBy: {
       type: String,
+      default: '',
     },
-    productIds: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Product' }],
+    products: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Product' }],
   },
   {
     timestamps: true,

@@ -16,7 +16,7 @@ const auth = async (req, res, next) => {
     if (accessTokenType !== 'Bearer')
       throw new CustomError(
         StatusCodes.UNAUTHORIZED,
-        'accessToken khong phai jwt!',
+        'Unauthorized', //accessToken khong phai jwt!
       );
     const data = await authService.verifyAccessToken(accessToken);
     isVerified = data.isVerified;
@@ -30,17 +30,13 @@ const auth = async (req, res, next) => {
   //const { authorization } = req.headers;
   //if (!authorization) throw new CustomError( StatusCodes.UNAUTHORIZED);
   //const [tokenType, accessToken] = authorization.split(' ');
-
   if (!isVerified) {
     let refreshTokenType, refreshToken;
     const b = req.cookies['x-refresh-token'];
     if (typeof b == 'string') [refreshTokenType, refreshToken] = b.split(' ');
 
     if (refreshTokenType !== 'Bearer')
-      throw new CustomError(
-        StatusCodes.UNAUTHORIZED,
-        'refreshToken khong phai jwt!',
-      );
+      throw new CustomError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
     const data = await authService.verifyRefreshTokenAndGenAccessToken(
       refreshToken,
     );
@@ -51,6 +47,7 @@ const auth = async (req, res, next) => {
       maxAge: 3600000,
     });
   }
+  //console.log(user);
   res.locals.user = user;
   //} catch (error) {
   return next();

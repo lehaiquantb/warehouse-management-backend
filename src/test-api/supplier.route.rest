@@ -1,0 +1,17 @@
+POST http://localhost:3000/suppliers
+Content-Type: application/json
+
+{
+    "createdBy": "lehaiquantb@gmail.com",
+    "modifiedBy": "lehaiquantb@gmail.com",
+    "name": "Nhà phân phối Minh Ngọc",
+    "address": "Hà Nội",
+    "address2": "Thái Bình",
+    "desciption": "Nhà cung cấp hàng đầu",
+    "email": "mn123@gmail.com",
+    "phone": "0987654321",
+    "status": "active",
+    "taxCode": "10000",
+    "website": "mn.com",
+    "SCode":""
+}

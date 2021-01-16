@@ -34,10 +34,28 @@ router.get(
   asyncMiddleware(productController.getProductPaging),
 );
 router.get(
-  '/:productId',
+  '/search',
   authenticate,
   checkRole('product-get'),
-  asyncMiddleware(productController.getProductById),
+  asyncMiddleware(productController.searchProduct),
+);
+router.get(
+  '/img/:PCode',
+  authenticate,
+  checkRole('product-get'),
+  asyncMiddleware(productController.getImageByPCode),
+);
+router.get(
+  '/:PCode',
+  authenticate,
+  checkRole('product-get'),
+  asyncMiddleware(productController.getProductByPCode),
+);
+router.post(
+  '/pagingFilterAndSorter',
+  authenticate,
+  checkRole('product-get'),
+  asyncMiddleware(productController.getProductPagingFilterSorter),
 );
 router.post(
   '/',
@@ -46,13 +64,13 @@ router.post(
   asyncMiddleware(productController.createProduct),
 );
 router.delete(
-  '/:productId',
+  '/:PCode',
   authenticate,
   checkRole('product-delete'),
   asyncMiddleware(productController.deleteProduct),
 );
 router.put(
-  '/:productId',
+  '/:PCode',
   authenticate,
   checkRole('product-put'),
   asyncMiddleware(productController.updateProduct),

@@ -4,6 +4,8 @@ const app = express();
 const PORT = process.env.PORT;
 const path = require('path');
 //need to ensure the order of functions
+const cors = require('cors');
+app.use(cors({ credentials: true, origin: 'http://localhost:2020' }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 

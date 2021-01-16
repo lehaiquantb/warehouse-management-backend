@@ -12,6 +12,10 @@ const userSchema = mongoose.Schema(
       unique: true,
       required: true,
       dropDups: true,
+      validate: {
+        validator: (v) => /\S+@\S+\.\S+/.test(v),
+        message: (props) => `${props.value} không phải định dạng email hợp lệ`,
+      },
     },
     password: {
       type: String,

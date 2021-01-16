@@ -34,10 +34,16 @@ router.get(
   asyncMiddleware(supplierController.getSupplierPaging),
 );
 router.get(
-  '/:supplierId',
+  '/search',
   authenticate,
   checkRole('supplier-get'),
-  asyncMiddleware(supplierController.getSupplierById),
+  asyncMiddleware(supplierController.searchSupplier),
+);
+router.get(
+  '/:SCode',
+  authenticate,
+  checkRole('supplier-get'),
+  asyncMiddleware(supplierController.getSupplierBySCode),
 );
 router.post(
   '/',
@@ -46,15 +52,21 @@ router.post(
   asyncMiddleware(supplierController.createSupplier),
 );
 router.delete(
-  '/:supplierId',
+  '/:SCode',
   authenticate,
   checkRole('supplier-delete'),
   asyncMiddleware(supplierController.deleteSupplier),
 );
 router.put(
-  '/:supplierId',
+  '/:SCode',
   authenticate,
   checkRole('supplier-put'),
   asyncMiddleware(supplierController.updateSupplier),
+);
+router.post(
+  '/pagingFilterAndSorter',
+  authenticate,
+  checkRole('supplier-get'),
+  asyncMiddleware(supplierController.getSupplierPagingFilterSorter),
 );
 module.exports = router;

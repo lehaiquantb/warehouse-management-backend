@@ -4,9 +4,11 @@ const paymentSchema = mongoose.Schema(
   {
     createdBy: {
       type: String,
+      default: '',
     },
     modifiedBy: {
       type: String,
+      default: '',
     },
     paymentMethod: {
       type: String,
@@ -15,14 +17,14 @@ const paymentSchema = mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ['active', 'inactive'],
-      default: 'active',
+      enum: ['DONE', 'NOT_YET'],
+      default: 'NOT_YET',
     },
     paidMoney: {
       type: Number,
       default: 0,
     },
-    receiptId: {
+    receipt: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Receipt',
     },

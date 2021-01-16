@@ -23,7 +23,7 @@ const createUser = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  const { status, accessToken, refreshToken } = await authService.login(
+  const { status, accessToken, refreshToken, user } = await authService.login(
     email,
     password,
   );
@@ -38,7 +38,23 @@ const login = async (req, res) => {
       maxAge:
         Number.parseInt(process.env.JWT_EXPIRES_TIME_REFRESH_TOKEN) * 1000,
     })
-    .send({ status: status, result: { accessToken, refreshToken }, a: 'a' });
+    .send({ status: status, result: { accessToken, refreshToken }, user });
 };
 
-module.exports = { getProfiles, createUser, login };
+const auth = async (req, res) => {
+  return res.send(res.locals.user);
+};
+
+const logout = async (req, res) => {
+  try {
+    const update = await authService.logout(req, res);
+    return res
+      .clearCookie('x-access-token')
+      .clearCookie('x-refresh-token')
+      .send(update);
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { getProfiles, createUser, login, auth, logout };

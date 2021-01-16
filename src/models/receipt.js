@@ -5,33 +5,51 @@ const receiptSchema = mongoose.Schema(
   {
     createdBy: {
       type: String,
+      default: '',
     },
     modifiedBy: {
       type: String,
+      default: '',
     },
     RCode: {
       type: String,
+      unique: [true, 'RCode đã bị trùng'],
+      dropDups: true,
     },
     note: {
       type: String,
+      default: '',
     },
     stockStatus: {
       type: String,
       enum: ['DONE', 'NOT_YET'],
       default: 'NOT_YET',
     },
-    tag: {
+    paymentStatus: {
       type: String,
+      enum: ['DONE', 'NOT_YET', 'PARTIAL'],
+      default: 'NOT_YET',
+    },
+    tags: [
+      {
+        type: String,
+        default: '',
+      },
+    ],
+    deliveryAddress: {
+      type: String,
+      default: '',
     },
     totalMoney: {
       type: Number,
+      required: [true, 'Tổng số tiền không được trống'],
     },
-    supplierId: {
+    supplier: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Supplier',
     },
-    paymentIds: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Payment' }],
-    productReceiptIds: [
+    payments: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Payment' }],
+    productReceipts: [
       { type: mongoose.SchemaTypes.ObjectId, ref: 'ProductReceipt' },
     ],
   },
@@ -54,4 +72,5 @@ receiptSchema.plugin(autoIncrement.plugin, {
   startAt: 0,
   incrementBy: 1,
 });
+// receiptSchema.index({ name: 'text' });
 module.exports = mongoose.model('Receipt', receiptSchema);

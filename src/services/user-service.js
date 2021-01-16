@@ -50,7 +50,6 @@ const createUser = async (user, req, res) => {
     const promiseSaveUser = await newUser.save();
     return promiseSaveUser;
   } catch (error) {
-    debugger;
     handleError(new CustomError(StatusCodes.BAD_REQUEST, error.message), res);
   }
 

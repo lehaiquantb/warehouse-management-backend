@@ -5,9 +5,11 @@ const supplierSchema = mongoose.Schema(
   {
     createdBy: {
       type: String,
+      default: '',
     },
     modifiedBy: {
       type: String,
+      default: '',
     },
     address: {
       type: String,
@@ -15,13 +17,17 @@ const supplierSchema = mongoose.Schema(
     },
     address2: {
       type: String,
+      default: '',
     },
     SCode: {
       type: Number,
       required: true,
+      unique: [true, 'SCode đã bị trùng'],
+      dropDups: true,
     },
     description: {
       type: String,
+      default: '',
     },
     email: {
       type: String,
@@ -52,11 +58,21 @@ const supplierSchema = mongoose.Schema(
     },
     taxCode: {
       type: String,
+      default: '',
     },
     website: {
       type: String,
+      default: '',
     },
-    receiptIds: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Receipt' }],
+    paid: {
+      type: Number,
+      default: 0,
+    },
+    debt: {
+      type: Number,
+      default: 0,
+    },
+    receipts: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Receipt' }],
   },
   {
     timestamps: true,
@@ -90,4 +106,5 @@ supplierSchema.plugin(autoIncrement.plugin, {
   startAt: 0,
   incrementBy: 1,
 });
+supplierSchema.index({ name: 'text' });
 module.exports = mongoose.model('Supplier', supplierSchema);

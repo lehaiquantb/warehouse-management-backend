@@ -17,12 +17,12 @@ const productReceiptSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
-    productId: {
+    product: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Product',
       required: true,
     },
-    receiptId: {
+    receipt: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Receipt',
       required: true,
