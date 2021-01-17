@@ -15,7 +15,7 @@ const paymentSchema = mongoose.Schema(
       enum: ['COD', 'BANK', 'CASH'],
       default: 'CASH',
     },
-    paymentStatus: {
+    status: {
       type: String,
       enum: ['DONE', 'NOT_YET'],
       default: 'NOT_YET',

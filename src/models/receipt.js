@@ -25,6 +25,14 @@ const receiptSchema = mongoose.Schema(
       enum: ['DONE', 'NOT_YET'],
       default: 'NOT_YET',
     },
+    updateStockStatusAt: {
+      type: Date,
+      default: Date.now(),
+    },
+    updatePaymentStatusAt: {
+      type: Date,
+      default: Date.now(),
+    },
     paymentStatus: {
       type: String,
       enum: ['DONE', 'NOT_YET', 'PARTIAL'],

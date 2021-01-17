@@ -34,10 +34,10 @@ router.get(
   asyncMiddleware(receiptController.getReceiptPaging),
 );
 router.get(
-  '/:receiptId',
+  '/:RCode',
   authenticate,
   checkRole('receipt-get'),
-  asyncMiddleware(receiptController.getReceiptById),
+  asyncMiddleware(receiptController.getReceiptByRCode),
 );
 router.post(
   '/',
@@ -46,15 +46,21 @@ router.post(
   asyncMiddleware(receiptController.createReceipt),
 );
 router.delete(
-  '/:receiptId',
+  '/:RCode',
   authenticate,
   checkRole('receipt-delete'),
   asyncMiddleware(receiptController.deleteReceipt),
 );
 router.put(
-  '/:receiptId',
+  '/:RCode',
   authenticate,
   checkRole('receipt-put'),
   asyncMiddleware(receiptController.updateReceipt),
+);
+router.post(
+  '/pagingFilterAndSorter',
+  authenticate,
+  checkRole('receipt-get'),
+  asyncMiddleware(receiptController.getReceiptPagingFilterSorter),
 );
 module.exports = router;
